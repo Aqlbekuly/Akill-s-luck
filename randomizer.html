@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Randomizer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0b1020;
+      --card: rgba(255, 255, 255, 0.08);
+      --text: #f5f7ff;
+      --muted: #b9c0d4;
+      --accent: #5eead4;
+      --accent-2: #60a5fa;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.25), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(94, 234, 212, 0.2), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: min(1200px, 90%);
+      margin: auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--muted);
+    }
+
+    .randomizer-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 40px;
+    }
+
+    .control-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .control-group {
+      margin-bottom: 24px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .control-group input,
+    .control-group textarea {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: inherit;
+      transition: 0.3s;
+    }
+
+    .control-group input:focus,
+    .control-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .control-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Custom Select Styling */
+    .custom-select {
+      position: relative;
+      width: 100%;
+    }
+
+    .custom-select select {
+      display: none;
+    }
+
+    .select-selected {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 12px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: 0.3s;
+    }
+
+    .select-selected:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .select-selected.active {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .select-items {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      z-index: 10;
+      margin-top: -1px;
+    }
+
+    .select-items.active {
+      display: block;
+    }
+
+    .select-items div {
+      padding: 12px;
+      color: var(--text);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .select-items div:hover {
+      background: rgba(94, 234, 212, 0.2);
+      color: var(--accent);
+    }
+
+    .select-items div.selected {
+      background: rgba(94, 234, 212, 0.3);
+      color: var(--accent);
+    }
+
+    .input-range-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input-range-group input[type="range"] {
+      flex: 1;
+    }
+
+    .input-range-group input[type="number"] {
+      width: 80px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .btn-generate {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #08111f;
+    }
+
+    .btn-generate:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-reset {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-reset:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .result-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 400px;
+    }
+
+    .result-container {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      width: 100%;
+    }
+
+    .result-container.active {
+      opacity: 1;
+    }
+
+    .result-type {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .result-value {
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 20px;
+      word-break: break-all;
+    }
+
+    .result-description {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .result-history {
+      margin-top: 30px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      width: 100%;
+    }
+
+    .result-history h3 {
+      margin-bottom: 12px;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 900px) {
+      .randomizer-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .result-value {
+        font-size: 2.5rem;
+      }
+
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html"
+   style="position:absolute; top:20px; left:20px; text-decoration:none; color:white; background:rgba(255,255,255,0.1); padding:10px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); font-family:Arial,sans-serif;">
+  ← Back
+</a>
+  <div class="container">
+    <header>
+      <h1>Custom Randomizer</h1>
+      <p>Generate random numbers, words, or dates with custom parameters</p>
+    </header>
+
+    <div class="randomizer-wrapper">
+      <div class="control-panel">
+        <h2 style="margin-bottom: 24px; color: var(--text);">Settings</h2>
+
+        <div class="control-group">
+          <label for="randomType">Type of Randomizer:</label>
+          <div class="custom-select" id="customSelect">
+            <select id="randomType">
+              <option value="number">Random Number</option>
+              <option value="word">Random Word</option>
+              <option value="date">Random Date</option>
+              <option value="choice">Random Choice</option>
+            </select>
+            <div class="select-selected">Random Number</div>
+            <div class="select-items">
+              <div data-value="number">Random Number</div>
+              <div data-value="word">Random Word</div>
+              <div data-value="date">Random Date</div>
+              <div data-value="choice">Random Choice</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Number Randomizer Controls -->
+        <div id="numberControls" class="control-group">
+          <label for="minNumber">Minimum:</label>
+          <input type="number" id="minNumber" value="1" />
+        </div>
+
+        <div id="numberControls2" class="control-group">
+          <label for="maxNumber">Maximum:</label>
+          <input type="number" id="maxNumber" value="100" />
+        </div>
+
+        <!-- Word Randomizer Controls -->
+        <div id="wordControls" class="control-group" style="display: none;">
+          <label for="wordList">Words (one per line):</label>
+          <textarea id="wordList" placeholder="Enter words here, one per line">Apple
+Banana
+Cherry
+Dragon
+Elephant
+Forest
+Galaxy
+Horizon</textarea>
+        </div>
+
+        <!-- Date Randomizer Controls -->
+        <div id="dateControls" class="control-group" style="display: none;">
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate" value="2024-01-01" />
+        </div>
+
+        <div id="dateControls2" class="control-group" style="display: none;">
+          <label for="endDate">End Date:</label>
+          <input type="date" id="endDate" value="2025-12-31" />
+        </div>
+
+        <!-- Choice Randomizer Controls -->
+        <div id="choiceControls" class="control-group" style="display: none;">
+          <label for="choiceList">Options (one per line):</label>
+          <textarea id="choiceList" placeholder="Enter options here, one per line">Option 1
+Option 2
+Option 3
+Option 4</textarea>
+        </div>
+
+        <!-- Common Controls -->
+        <div class="control-group">
+          <label for="quantity">How many results:</label>
+          <div class="input-range-group">
+            <input type="range" id="quantityRange" min="1" max="10" value="1" onchange="updateQuantityInput()" />
+            <input type="number" id="quantity" min="1" max="10" value="1" onchange="updateQuantityRange()" />
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-generate" onclick="generateRandom()">Generate</button>
+          <button class="btn btn-reset" onclick="resetForm()">Reset</button>
+        </div>
+      </div>
+
+      <div class="result-panel">
+        <div class="result-container" id="resultContainer">
+          <div class="result-type" id="resultType">Random Number</div>
+          <div class="result-value" id="resultValue">42</div>
+          <div class="result-description" id="resultDescription">Click "Generate" to start</div>
+
+          <div class="result-history">
+            <h3>History:</h3>
+            <div id="historyList"></div>
+          </div>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          Configure settings and click "Generate" to see results
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let resultHistory = [];
+
+    // Custom Select Functionality
+    function initCustomSelect() {
+      const selectElement = document.getElementById('customSelect');
+      const selectSelected = selectElement.querySelector('.select-selected');
+      const selectItems = selectElement.querySelector('.select-items');
+      const options = selectItems.querySelectorAll('div');
+      const nativeSelect = document.getElementById('randomType');
+
+      selectSelected.addEventListener('click', () => {
+        selectItems.classList.toggle('active');
+        selectSelected.classList.toggle('active');
+      });
+
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          const value = option.dataset.value;
+          selectSelected.textContent = option.textContent;
+          nativeSelect.value = value;
+          selectItems.classList.remove('active');
+          selectSelected.classList.remove('active');
+
+          // Mark as selected
+          options.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+
+          updateControls();
+        });
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!selectElement.contains(e.target)) {
+          selectItems.classList.remove('active');
+          selectSelected.classList.remove('active');
+        }
+      });
+    }
+
+    function updateControls() {
+      const type = document.getElementById('randomType').value;
+      
+      // Hide all controls
+      document.getElementById('numberControls').style.display = 'none';
+      document.getElementById('numberControls2').style.display = 'none';
+      document.getElementById('wordControls').style.display = 'none';
+      document.getElementById('dateControls').style.display = 'none';
+      document.getElementById('dateControls2').style.display = 'none';
+      document.getElementById('choiceControls').style.display = 'none';
+
+      // Show relevant controls
+      if (type === 'number') {
+        document.getElementById('numberControls').style.display = 'block';
+        document.getElementById('numberControls2').style.display = 'block';
+        document.getElementById('resultType').textContent = 'Random Number';
+      } else if (type === 'word') {
+        document.getElementById('wordControls').style.display = 'block';
+        document.getElementById('resultType').textContent = 'Random Word';
+      } else if (type === 'date') {
+        document.getElementById('dateControls').style.display = 'block';
+        document.getElementById('dateControls2').style.display = 'block';
+        document.getElementById('resultType').textContent = 'Random Date';
+      } else if (type === 'choice') {
+        document.getElementById('choiceControls').style.display = 'block';
+        document.getElementById('resultType').textContent = 'Random Choice';
+      }
+    }
+
+    function updateQuantityInput() {
+      document.getElementById('quantity').value = document.getElementById('quantityRange').value;
+    }
+
+    function updateQuantityRange() {
+      const val = Math.min(10, Math.max(1, document.getElementById('quantity').value));
+      document.getElementById('quantityRange').value = val;
+      document.getElementById('quantity').value = val;
+    }
+
+    function generateRandom() {
+      const type = document.getElementById('randomType').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const results = [];
+
+      for (let i = 0; i < quantity; i++) {
+        let result;
+        if (type === 'number') {
+          const min = parseInt(document.getElementById('minNumber').value) || 1;
+          const max = parseInt(document.getElementById('maxNumber').value) || 100;
+          result = Math.floor(Math.random() * (max - min + 1)) + min;
+        } else if (type === 'word') {
+          const words = document.getElementById('wordList').value.split('\n').filter(w => w.trim());
+          result = words[Math.floor(Math.random() * words.length)] || 'No words';
+        } else if (type === 'date') {
+          const startDate = new Date(document.getElementById('startDate').value);
+          const endDate = new Date(document.getElementById('endDate').value);
+          const randomTime = startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime());
+          result = new Date(randomTime).toISOString().split('T')[0];
+        } else if (type === 'choice') {
+          const choices = document.getElementById('choiceList').value.split('\n').filter(c => c.trim());
+          result = choices[Math.floor(Math.random() * choices.length)] || 'No choices';
+        }
+        results.push(result);
+      }
+
+      displayResults(results, type);
+      addToHistory(results, type);
+    }
+
+    function displayResults(results, type) {
+      const resultValue = document.getElementById('resultValue');
+      const resultDescription = document.getElementById('resultDescription');
+      const resultContainer = document.getElementById('resultContainer');
+      const emptyState = document.getElementById('emptyState');
+
+      if (results.length === 1) {
+        resultValue.textContent = results[0];
+        resultDescription.textContent = `Generated 1 ${type}`;
+      } else {
+        resultValue.textContent = results.join(', ');
+        resultDescription.textContent = `Generated ${results.length} results`;
+      }
+
+      emptyState.style.display = 'none';
+      resultContainer.classList.add('active');
+    }
+
+    function addToHistory(results, type) {
+      const timestamp = new Date().toLocaleTimeString();
+      const historyEntry = `${timestamp} - ${type}: ${results.join(', ')}`;
+      resultHistory.unshift(historyEntry);
+      
+      if (resultHistory.length > 5) {
+        resultHistory.pop();
+      }
+
+      updateHistoryDisplay();
+    }
+
+    function updateHistoryDisplay() {
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = resultHistory
+        .map(item => `<div class="history-item">${item}</div>`)
+        .join('');
+    }
+
+    function resetForm() {
+      document.getElementById('randomType').value = 'number';
+      document.getElementById('quantity').value = 1;
+      document.getElementById('quantityRange').value = 1;
+      document.getElementById('minNumber').value = 1;
+      document.getElementById('maxNumber').value = 100;
+      document.getElementById('resultContainer').classList.remove('active');
+      document.getElementById('emptyState').style.display = 'block';
+      
+      // Reset custom select
+      const selectSelected = document.querySelector('.select-selected');
+      selectSelected.textContent = 'Random Number';
+      document.querySelectorAll('.select-items div').forEach(opt => opt.classList.remove('selected'));
+      document.querySelectorAll('.select-items div')[0].classList.add('selected');
+      
+      updateControls();
+    }
+
+    // Initialize on page load
+    initCustomSelect();
+    updateControls();
+  </script>
+</body>
+</html>

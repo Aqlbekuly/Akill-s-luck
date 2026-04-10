@@ -1,0 +1,24 @@
+.hero-intro {
+  order: 1; /* Intro слева */
+}
+
+.random-showcase {
+  order: 2; /* Showcase справа */
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  text-decoration: none;
+  color: rgb(1, 1, 1);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
