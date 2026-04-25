@@ -1,11 +1,3 @@
-.hero-intro {
-  order: 1; /* Intro слева */
-}
-
-.random-showcase {
-  order: 2; /* Showcase справа */
-}
-
 .back-btn {
   position: absolute;
   top: 20px;

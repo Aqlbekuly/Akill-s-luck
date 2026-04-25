@@ -318,22 +318,46 @@
     }
 
     @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-        text-align: center;
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
       }
 
       .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
         padding-top: 40px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 6vw, 3.4rem);
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .buttons {
+        justify-content: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 280px;
       }
 
       .random-showcase__text h2 {
         font-size: 36px;
       }
 
+      .random-showcase__desc {
+        font-size: 16px;
+      }
+
       .random-showcase__visual {
-        width: 280px;
-        height: 280px;
+        width: min(100%, 320px);
+        height: 300px;
       }
 
       .random-showcase__orb {
@@ -372,6 +396,56 @@
       .random-showcase__chip--four {
         bottom: 25px;
         right: 20px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .container {
+        width: min(100%, 94%);
+      }
+
+      header {
+        padding: 18px 0;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+      }
+
+      .hero {
+        padding: 30px 0 30px;
+      }
+
+      .hero h1 {
+        font-size: clamp(1.8rem, 8vw, 2.8rem);
+      }
+
+      .hero p {
+        font-size: 0.98rem;
+      }
+
+      .btn {
+        max-width: 100%;
+      }
+
+      .random-showcase__visual {
+        height: 260px;
+      }
+
+      .random-showcase__text h2 {
+        font-size: 30px;
+      }
+
+      .section {
+        padding: 40px 0;
+      }
+
+      .section-title {
+        margin-bottom: 28px;
       }
     }
   </style>
