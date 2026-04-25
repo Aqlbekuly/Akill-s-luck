@@ -298,6 +298,24 @@
       font-size: 1.05rem;
     }
 
+    .back-btn {
+      display: inline-flex;
+      position: relative;
+      margin-bottom: 24px;
+      text-decoration: none;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
     @media (max-width: 900px) {
       .randomizer-wrapper {
         grid-template-columns: 1fr;
@@ -387,11 +405,8 @@
   </style>
 </head>
 <body>
-  <a href="index.html"
-   style="position:absolute; top:20px; left:20px; text-decoration:none; color:white; background:rgba(255,255,255,0.1); padding:10px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); font-family:Arial,sans-serif;">
-  ← Back
-</a>
   <div class="container">
+    <a href="index.html" class="back-btn">← Back</a>
     <header>
       <h1>Custom Randomizer</h1>
       <p>Generate random numbers, words, or dates with custom parameters</p>
